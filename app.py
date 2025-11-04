@@ -1,4 +1,6 @@
 import os
+from supabase import create_client
+from datetime import timedelta
 from flask import Flask, render_template,request,send_file,url_for,redirect
 from dotenv import load_dotenv
 import stripe
@@ -9,6 +11,12 @@ load_dotenv()
 
 #Inicializamos aplicación de Flask
 app = Flask(__name__)
+
+#Supabase configuración
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
+
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 # Configuración de claves
 app.config['SECRET_KEY'] = os.getenv("FLASK_SECRET_KEY")
@@ -92,14 +100,20 @@ def success(robot_name):
     if not robot:
         return "Robot no encontrado", 404
 
-    # Crear token temporal de descarga (válido 5 minutos)
-    token = serializer.dumps(robot['file'])
-    download_url = url_for('secure_download', token=token, _external=True)
+    # 🔒 Crear enlace temporal desde Supabase (válido 5 minutos)
+    try:
+        # 300 segundos = 5 minutos
+        response = supabase.storage.from_("robots").create_signed_url(
+            robot["file"], expires_in=300
+        )
+        signed_url = response.get("signedURL")
+    except Exception as e:
+        return f"Error generando enlace temporal: {e}", 500
 
     return render_template(
         'success.html',
         robot=robot,
-        download_url=download_url
+        download_url=signed_url
     )
 
 # Página de pago cancelado
@@ -107,32 +121,14 @@ def success(robot_name):
 def cancel():
     return render_template('cancel.html')
 
+@app.route('/terminos')
+def terminos():
+    return render_template('terminos.html')
 
-# Diccionario global para tokens usados
-used_tokens = set()
+@app.route('/privacidad')
+def privacidad():
+    return render_template('privacidad.html')
 
-# Ruta segura de descarga
-@app.route('/download/<token>')
-def secure_download(token):
-    try:
-        # Verifica si el token ya se usó
-        if token in used_tokens:
-            return "❌ Este enlace ya ha sido usado.", 403
-
-        # Decodifica el token
-        filename = serializer.loads(token, max_age=300)  # 5 minutos
-        file_path = os.path.join('downloads', filename)
-
-        # Marca el token como usado
-        used_tokens.add(token)
-
-        return send_file(file_path, as_attachment=True, download_name=filename)
-
-    except SignatureExpired:
-        return "⚠️ Enlace expirado. Solicita uno nuevo.", 403
-    except BadSignature:
-        return "❌ Enlace inválido.", 403
-
-#Corre la aplicación
+#Correr la aplicación
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

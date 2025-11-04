@@ -78,7 +78,7 @@
         <!-- Contenido visible -->
         <div class="card-body d-flex flex-column position-relative text-dark" style="z-index: 1;">
           <h5 class="card-title fw-bold">{{ robot.name }}</h5>
-          <p class="card-text">Descripción del robot...</p>
+          <!--<p class="card-text">Descripción del robot...</p>-->
           <p class="fw-bold">Precio: {{ robot.amount / 100 }} €</p>
           <form action="{{ url_for('create_checkout_session', robot_name=id) }}" method="POST">
             <button type="submit" class="btn btn-primary w-100">
@@ -174,12 +174,23 @@ document.querySelectorAll('.robot-bg').forEach(function(div){
 </section>
 
 
-        <!-- Footer -->
-        <footer class="bg-dark text-white py-4 mt-5">
-          <div class="container text-center">
-            <p>Contacto / soporte | Términos y condiciones | Política de privacidad</p>
-          </div>
-        </footer>
+     <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+      <div class="container text-center small">
+        <p class="mb-1">&copy; 2025 Scymera. Todos los derechos reservados.</p>
+        <p class="mb-0">
+          <a href="mailto:ScymeraBot@gmail.com" class="text-white text-decoration-none me-2">
+            📧 Contacto / Soporte
+          </a> |
+          <a href="/terminos" class="text-white text-decoration-none mx-2">
+            Términos y Condiciones
+          </a> |
+          <a href="/privacidad" class="text-white text-decoration-none ms-2">
+            Política de Privacidad
+          </a>
+        </p>
+      </div>
+    </footer>
 
       </div>
     </div>

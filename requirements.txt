@@ -4,3 +4,7 @@ python-dotenv
 itsdangerous
 gunicorn
 os
+supabase
+datetime
+flask
+timedelta
