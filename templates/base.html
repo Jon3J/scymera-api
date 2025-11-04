@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scymera</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    /* Hero con overlay */
+    .hero {
+      position: relative;
+      background-image: url('{{ url_for("static", filename="foto_fondo.jpg") }}');
+      background-size: cover;
+      background-position: center;
+      height: 80vh;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .hero-content {
+      position: relative;
+      text-align: center;
+      z-index: 2;
+    }
+    .robot-card img {
+      max-height: 100px;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+      <!-- Contenido principal -->
+    <div class="d-flex"> <!-- espacio igual al ancho de la barra -->
+      <!-- Hero -->
+      <section class="hero flex-grow-1">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <!-- Contenedor flex para imagen + título -->
+          <div class="d-flex align-items-center justify-content-center mb-2">
+            <img src="{{ url_for('static', filename='logo.png') }}" 
+                class="img-fluid" 
+                style="max-width: 150px; filter: brightness(0) invert(1);">
+            <h1 class="display-2 fw-bold mb-0 ms-2" translate="no">Scymera</h1>
+          </div>
+
+          <!-- Subtítulo debajo -->
+          <h5 class="fw-bold text-center mt-1">"Robots inteligentes, decisiones rápidas"</h5>
+          <a href="#robots" class="btn btn-primary btn-lg mt-3">Ver robots</a>
+        </div>
+      </section>
+    </div>
+
+
+<section id="robots" class="container my-5">
+  <h2 class="mb-5 text-center">Nuestros Robots</h2>
+  <div class="row g-4 justify-content-center">
+
+    {% for id, robot in robots.items() %}
+    <div class="col-md-4">
+      <div class="card h-100 shadow-sm text-white position-relative overflow-hidden robot-card">
+
+        <!-- Imagen de fondo -->
+        <div class="position-absolute top-0 start-0 w-100 h-100 robot-bg"
+             data-img="{{ url_for('static', filename=robot.image) }}">
+        </div>
+
+        <!-- Contenido visible -->
+        <div class="card-body d-flex flex-column position-relative text-dark" style="z-index: 1;">
+          <h5 class="card-title fw-bold">{{ robot.name }}</h5>
+          <p class="card-text">Descripción del robot...</p>
+          <p class="fw-bold">Precio: {{ robot.amount / 100 }} €</p>
+          <form action="{{ url_for('create_checkout_session', robot_name=id) }}" method="POST">
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-credit-card"></i> Comprar con Stripe
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+    {% endfor %}
+
+  </div>
+</section>
+
+<!-- CSS para el fondo de las tarjetas -->
+<style>
+.robot-bg {
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2;
+    z-index: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: opacity 0.3s;
+}
+
+.robot-card:hover .robot-bg {
+    opacity: 0.4;
+}
+</style>
+
+<!-- JavaScript para establecer las imágenes de fondo -->
+<script>
+document.querySelectorAll('.robot-bg').forEach(function(div){
+    div.style.backgroundImage = 'url(' + div.dataset.img + ')';
+});
+</script>
+
+
+  </div>
+</section>
+
+
+        <!-- Beneficios -->
+<section class="container my-5">
+  <h2 class="mb-5 text-center">Por qué elegir Scymera</h2>
+  <div class="row g-4 justify-content-center">
+
+    <!-- Beneficio 1 -->
+    <div class="col-md-4">
+      <div class="card h-100 text-center shadow-sm border-0">
+        <div class="card-body">
+          <div class="mb-3">
+            <i class="bi bi-robot fs-1 text-primary"></i> <!-- Icono -->
+          </div>
+          <h5 class="card-title fw-bold">Listos para usar</h5>
+          <p class="card-text">Robots listos para usar, sin configuración complicada.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Beneficio 2 -->
+    <div class="col-md-4">
+      <div class="card h-100 text-center shadow-sm border-0">
+        <div class="card-body">
+          <div class="mb-3">
+            <i class="bi bi-bar-chart-line fs-1 text-success"></i>
+          </div>
+          <h5 class="card-title fw-bold">Estrategias optimizadas</h5>
+          <p class="card-text">Estrategias probadas y optimizadas para maximizar resultados.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Beneficio 3 -->
+    <div class="col-md-4">
+      <div class="card h-100 text-center shadow-sm border-0">
+        <div class="card-body">
+          <div class="mb-3">
+            <i class="bi bi-shield-lock fs-1 text-warning"></i>
+          </div>
+          <h5 class="card-title fw-bold">Pago seguro</h5>
+          <p class="card-text">Pago seguro y descarga inmediata de tus robots.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+        <!-- Footer -->
+        <footer class="bg-dark text-white py-4 mt-5">
+          <div class="container text-center">
+            <p>Contacto / soporte | Términos y condiciones | Política de privacidad</p>
+          </div>
+        </footer>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+stripe>=11.5.0
+Flask
+python-dotenv
+itsdangerous
+gunicorn
+os
